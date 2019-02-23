@@ -15,12 +15,16 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
 
 class UserTaskSerializer(serializers.HyperlinkedModelSerializer):
     project_name = serializers.SerializerMethodField()
+    project_prefix = serializers.SerializerMethodField()
     task_duration = serializers.SerializerMethodField()
 
     project_id = serializers.IntegerField(write_only=True, required=True)
 
     def get_project_name(self, task: Task):
         return task.project.name
+
+    def get_project_prefix(self, task: Task):
+        return task.project.prefix
 
     def get_task_duration(self, task: Task):
         if not task.end:
@@ -38,6 +42,7 @@ class UserTaskSerializer(serializers.HyperlinkedModelSerializer):
             'project_id',
             'task_duration',
             'project_name',
+            'project_prefix',
             'task_number',
             'description',
             'start',
