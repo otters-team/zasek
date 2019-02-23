@@ -25,7 +25,7 @@ SECRET_KEY = 't(bkm3i8!=j*3=a0+%4$dv6h4%whelxzt7-%+o4amizzb94i$q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'rest_auth.registration',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
