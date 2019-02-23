@@ -8,7 +8,7 @@ class Task(models.Model):
     task_number = models.IntegerField()
     description = models.CharField(max_length=150)
     start = models.DateTimeField(auto_now=True)
-    end = models.DateTimeField()
+    end = models.DateTimeField(blank=True, null=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,

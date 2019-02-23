@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import serializers
 from zasek.api.models import Project, Task
 
@@ -6,27 +7,38 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Project
         fields = (
+            'id',
             'prefix',
             'name',
         )
 
 
-class TaskSerializer(serializers.HyperlinkedModelSerializer):
+class UserTaskSerializer(serializers.HyperlinkedModelSerializer):
     project_name = serializers.SerializerMethodField()
     task_duration = serializers.SerializerMethodField()
+
+    project_id = serializers.IntegerField(write_only=True, required=True)
 
     def get_project_name(self, task: Task):
         return task.project.name
 
     def get_task_duration(self, task: Task):
+        if not task.end:
+            return timezone.now() - task.start
         return task.end - task.start
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
 
     class Meta:
         model = Task
         fields = (
+            'project_id',
+            'task_duration',
+            'project_name',
             'task_number',
             'description',
             'start',
             'end',
-            'user',
         )
