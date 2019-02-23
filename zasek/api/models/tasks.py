@@ -4,7 +4,7 @@ from django.db import models
 
 class Task(models.Model):
 
-    project_id = models.ForeignKey('Project', on_delete=models.CASCADE)
+    project = models.ForeignKey('Project', on_delete=models.CASCADE)
     task_number = models.IntegerField()
     description = models.CharField(max_length=150)
     start = models.DateTimeField(auto_now=True)
