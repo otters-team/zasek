@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "zasek"
+version = "0.1.0"
+description = ""
+authors = ["otters-team"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+django = "^2.1"
+djangorestframework = "^3.9"
+
+[tool.poetry.dev-dependencies]
+pytest = "^3.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
