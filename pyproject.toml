@@ -8,6 +8,7 @@ authors = ["otters-team"]
 python = "^3.7"
 django = "^2.1"
 djangorestframework = "^3.9"
+psycopg2 = "^2.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"
