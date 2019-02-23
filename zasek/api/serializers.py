@@ -34,6 +34,7 @@ class UserTaskSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Task
         fields = (
+            'id',
             'project_id',
             'task_duration',
             'project_name',
