@@ -12,4 +12,5 @@ class Task(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
-)
+    )
+    task_duration = models.IntegerField(blank=True, default=0)

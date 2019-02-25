@@ -27,9 +27,14 @@ class UserTaskSerializer(serializers.HyperlinkedModelSerializer):
         return task.project.prefix
 
     def get_task_duration(self, task: Task):
-        if not task.end:
-            return timezone.now() - task.start
-        return task.end - task.start
+        if not task.task_duration:
+            total_duration = 0
+            duration_timedelta = timezone.now() - task.start
+            if duration_timedelta.days:
+                total_duration = duration_timedelta.days * 60 * 60 * 24
+            total_duration += duration_timedelta.seconds
+            return total_duration
+        return task.task_duration
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
