@@ -1,5 +1,9 @@
+from datetime import datetime
+
+import pytz
 from django.db.models import Sum
 from django.utils import timezone
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -10,6 +14,12 @@ from zasek.api.serializers import UserTaskSerializer, ProjectSerializer
 
 class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = UserTaskSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = (
+        'task_number',
+        'project_id',
+        'user_id',
+    )
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user.id)
@@ -37,7 +47,16 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def report(self, request):
-        data = Task.objects.values('task_number', 'project_id').annotate(Sum('task_duration'))
+        start_param = int(self.request.query_params.get('start', None))
+        end_param = int(self.request.query_params.get('end', None))
+        data = Task.objects
+        if start_param:
+            start = datetime.utcfromtimestamp(start_param).replace(tzinfo=pytz.utc)
+            data = data.filter(start__gte=start)
+        if end_param:
+            end = datetime.utcfromtimestamp(end_param).replace(tzinfo=pytz.utc)
+            data = data.filter(end__lte=end)
+        data = data.values('task_number', 'project_id').annotate(Sum('task_duration'))
         return Response(data)
 
 
