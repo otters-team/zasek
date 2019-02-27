@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import pytz
 from dateutil import parser
 from django.db.models import Sum
@@ -9,8 +7,9 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from zasek.api.core import calc_task_duration
 from zasek.api.models import Project, Task
-from zasek.api.serializers import UserTaskSerializer, ProjectSerializer
+from zasek.api.serializers import ProjectSerializer, UserTaskSerializer
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -33,18 +32,18 @@ class TaskViewSet(viewsets.ModelViewSet):
         tasks.update(
             end=timezone.now(),
         )
+        for task in tasks:
+            task.task_duration = calc_task_duration(task)
+            task.save()
         super().perform_create(serializer)
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['post'])
     def close(self, request, pk=None):
         task = self.get_object()
         task.end = timezone.now()
-        duration_timedelta = task.end - task.start
-        if duration_timedelta.days:
-            task.task_duration = duration_timedelta.days * 60 * 60 * 24
-        task.task_duration += duration_timedelta.seconds
+        task.task_duration = calc_task_duration(task)
         task.save()
-        return Response({'status': 'ok'})
+        return Response(self.get_serializer(task).data)
 
     @action(detail=False, methods=['get'])
     def report(self, request):
