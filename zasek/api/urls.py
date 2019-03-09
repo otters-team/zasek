@@ -13,8 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path, include
-
+from django.urls import include, path
 from rest_framework import routers
 
 from zasek.api import views
@@ -22,6 +21,7 @@ from zasek.api import views
 router = routers.SimpleRouter()
 router.register('tasks', views.TaskViewSet, base_name='user-task')
 router.register('projects', views.ProjectViewSet)
+router.register('report', views.SummaryReportViewSet, base_name='task-report')
 
 urlpatterns = [
     path('rest-auth', include('rest_auth.urls')),

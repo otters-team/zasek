@@ -49,3 +49,15 @@ class UserTaskSerializer(serializers.HyperlinkedModelSerializer):
             'start',
             'end',
         )
+
+
+class TaskReportSerializer(serializers.HyperlinkedModelSerializer):
+    task_duration = serializers.ReadOnlyField(source='task_duration__sum')
+
+    class Meta:
+        model = Task
+        fields = (
+            'task_duration',
+            'project_id',
+            'task_number',
+        )
