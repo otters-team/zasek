@@ -3,7 +3,9 @@ from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 
 from zasek.api.core import calc_task_duration
 from zasek.api.filters import TaskFilter
@@ -19,7 +21,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user.id)
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer: Serializer):
         tasks = Task.objects.filter(
             user=self.request.user.id,
             end__isnull=True,
@@ -33,7 +35,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         super().perform_create(serializer)
 
     @action(detail=True, methods=['post'])
-    def close(self, request, pk=None):
+    def close(self, request: Request, pk: int = None):
         task = self.get_object()
         task.end = timezone.now()
         task.task_duration = calc_task_duration(task)
