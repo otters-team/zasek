@@ -1,5 +1,6 @@
-from django.utils import timezone
 from rest_framework import serializers
+
+from zasek.api.core import calc_task_duration
 from zasek.api.models import Project, Task
 
 
@@ -27,9 +28,9 @@ class UserTaskSerializer(serializers.HyperlinkedModelSerializer):
         return task.project.prefix
 
     def get_task_duration(self, task: Task):
-        if not task.end:
-            return timezone.now() - task.start
-        return task.end - task.start
+        if not task.task_duration:
+            return calc_task_duration(task)
+        return task.task_duration
 
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
@@ -47,4 +48,16 @@ class UserTaskSerializer(serializers.HyperlinkedModelSerializer):
             'description',
             'start',
             'end',
+        )
+
+
+class TaskReportSerializer(serializers.HyperlinkedModelSerializer):
+    task_duration = serializers.ReadOnlyField(source='task_duration__sum')
+
+    class Meta:
+        model = Task
+        fields = (
+            'task_duration',
+            'project_id',
+            'task_number',
         )
